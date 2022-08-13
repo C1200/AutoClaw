@@ -1,10 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
+import { Howl } from 'howler';
 import { randomInt } from '../utils/random';
 import Border from '../components/Border';
 import Claw from '../components/Claw';
 import Grid from '../components/Grid';
 import Item from '../components/Item';
 import Arrow from '../components/Arrow';
+import clawSfx from '../assets/audio/claw.mp3';
+
+let GRID_SIZE = [0, 0];
 
 function generateItem() {
     const items = Item.items;
@@ -26,8 +31,8 @@ function allowedMoves(clawPos) {
 
     if (clawPos[0] === 0) moves.delete('left');
     if (clawPos[1] === 0) moves.delete('up');
-    if (clawPos[0] === 9) moves.delete('right');
-    if (clawPos[1] === 9) moves.delete('down');
+    if (clawPos[0] === GRID_SIZE[0] - 1) moves.delete('right');
+    if (clawPos[1] === GRID_SIZE[1] - 1) moves.delete('down');
 
     return [...moves.values()];
 }
@@ -49,6 +54,8 @@ function calculateClawPos(clawPos, code) {
             case 'right':
                 newClawPos[0] += 1;
                 break;
+            case 'pause':
+                break;
             default:
                 break;
         }
@@ -58,16 +65,24 @@ function calculateClawPos(clawPos, code) {
 }
 
 function aiMove(clawPos) {
-    const moves = allowedMoves(clawPos);
+    const moves = [...allowedMoves(clawPos), 'pause'];
     return moves[randomInt(0, moves.length - 1)];
 }
 
+const clawAudio = new Howl({
+    src: [clawSfx],
+});
+
 function Game() {
+    const params = useParams();
     const [items, setItems] = useState(null);
     const [clawOpen, setClawOpen] = useState(true);
     const [clawPos, setClawPos] = useState([0, 0]);
     const [fetchingItem, fetchItem] = useState(null);
     const [code, setCode] = useState([{ choose: true }]);
+    const [totalLines, setTotalLines] = useState(0);
+
+    GRID_SIZE = [parseInt(params.x), parseInt(params.y)];
 
     const remainingItems = Array.isArray(items)
         ? items.flat().filter((item) => item !== null && item !== 'chute')
@@ -82,34 +97,43 @@ function Game() {
         });
     }
 
-    const go = useCallback(async function () {
+    const go = async function () {
         function wait(delay) {
             return new Promise((resolve) => {
                 setTimeout(resolve, delay);
             });
         }
 
+        setTotalLines((prev) => {
+            return prev + code.filter((line) => !!line.value).length;
+        });
+
         const newClawPos = calculateClawPos(clawPos, code);
         setClawPos(newClawPos);
-        setCode([{ choose: true }]);
+        await wait(2000);
 
         if (items[newClawPos[1]][newClawPos[0]] === fetchingItem) {
-            setClawOpen(false);
+            clawAudio.play();
             removeItem(newClawPos);
-            await wait(1000);
+            setClawOpen(false);
+            await wait(2000);
+            clawAudio.play();
             setClawPos([0, 0]);
             setClawOpen(true);
+            fetchItem(null);
         } else {
             setClawPos([0, 0]);
         }
-    }, [clawPos, code, fetchingItem, items]);
+
+        setCode([{ choose: true }]);
+    };
 
     useEffect(() => {
         if (!items) {
             let y = [];
 
-            for (let i = 0; i < 10; i++) {
-                y.push(generateItems(10, i === 0));
+            for (let i = 0; i < GRID_SIZE[1]; i++) {
+                y.push(generateItems(GRID_SIZE[0], i === 0));
             }
 
             setItems(y);
@@ -120,9 +144,10 @@ function Game() {
         if (!fetchingItem && items) {
             let newItem;
             while (!newItem) {
-                let choice = items[randomInt(0, 9)];
+                let choice = items[randomInt(0, GRID_SIZE[1] - 1)];
 
-                if (Array.isArray(choice)) newItem = choice[randomInt(0, 9)];
+                if (Array.isArray(choice))
+                    newItem = choice[randomInt(0, GRID_SIZE[0])];
                 else newItem = null;
 
                 if (newItem === 'chute') newItem = null;
@@ -153,6 +178,10 @@ function Game() {
         };
     }, [code, clawPos]);
 
+    if (remainingItems === 0) {
+        return <Navigate to={`/win/${totalLines}`} />;
+    }
+
     return (
         <Grid
             cols={2}
@@ -162,7 +191,7 @@ function Game() {
         >
             <div className="item-grid-container">
                 <Border>
-                    <Grid cols={10} rows={10} unit="4em">
+                    <Grid cols={GRID_SIZE[0]} rows={GRID_SIZE[1]} unit="4em">
                         {(items || []).map((row, ypos) =>
                             row.map((item, xpos) => (
                                 <Item value={item} key={xpos + ':' + ypos}>

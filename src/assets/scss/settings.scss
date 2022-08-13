@@ -1,0 +1,41 @@
+.settings {
+    & {
+        width: 100%;
+        height: 100%;
+        padding: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    & > div {
+        width: max-content;
+        height: max-content;
+    }
+
+    * {
+        margin: 0;
+    }
+
+    .flex {
+        display: flex;
+        align-items: center;
+    }
+
+    input[type='text'],
+    input[type='number'] {
+        border: 1px solid #253649;
+        border-radius: 5px;
+        margin: 4px;
+        padding: 1em;
+    }
+
+    button {
+        background: #253649;
+        color: white;
+        border: 0px solid transparent;
+        border-radius: 5px;
+        margin: 4px;
+        padding: 1em 6em;
+    }
+}

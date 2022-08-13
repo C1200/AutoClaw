@@ -1,0 +1,31 @@
+.credits {
+    & {
+        padding: 1em;
+        background: black;
+        color: white;
+        text-align: center;
+    }
+
+    .close {
+        & {
+            text-decoration: none;
+            position: fixed;
+            top: 1em;
+            right: 1em;
+            color: white;
+        }
+
+        &::before {
+            content: '\2717';
+        }
+    }
+
+    section {
+        padding-bottom: 1em;
+    }
+
+    section p,
+    section h4 {
+        margin: 0;
+    }
+}

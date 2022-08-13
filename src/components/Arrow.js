@@ -37,7 +37,11 @@ function Arrow({ value, ai, choose, allowed, onChoose }) {
 
     return (
         <div className="arrow">
-            <img className="arrow-image" src={images[value]} alt={value} />
+            <img
+                className="arrow-image"
+                src={value === 'pause' ? png('pause') : images[value]}
+                alt={value}
+            />
             {ai && <img className="ai-indicator" src={png('ai')} alt="AI" />}
         </div>
     );
