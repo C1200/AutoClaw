@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Navigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Howl } from 'howler';
 import { randomInt } from '../utils/random';
 import Border from '../components/Border';
@@ -74,6 +74,7 @@ const clawAudio = new Howl({
 });
 
 function Game() {
+    const navigate = useNavigate();
     const params = useParams();
     const [items, setItems] = useState(null);
     const [clawOpen, setClawOpen] = useState(true);
@@ -81,6 +82,7 @@ function Game() {
     const [fetchingItem, fetchItem] = useState(null);
     const [code, setCode] = useState([{ choose: true }]);
     const [totalLines, setTotalLines] = useState(0);
+    const [hideGhost, setHideGhost] = useState(false);
 
     GRID_SIZE = [parseInt(params.x), parseInt(params.y)];
 
@@ -104,6 +106,7 @@ function Game() {
             });
         }
 
+        setHideGhost(true);
         setTotalLines((prev) => {
             return prev + code.filter((line) => !!line.value).length;
         });
@@ -125,7 +128,13 @@ function Game() {
             setClawPos([0, 0]);
         }
 
+        setHideGhost(false);
         setCode([{ choose: true }]);
+
+        if (remainingItems === 0) {
+            await wait(2000);
+            navigate(`/win/${totalLines}`);
+        }
     };
 
     useEffect(() => {
@@ -178,10 +187,6 @@ function Game() {
         };
     }, [code, clawPos]);
 
-    if (remainingItems === 0) {
-        return <Navigate to={`/win/${totalLines}`} />;
-    }
-
     return (
         <Grid
             cols={2}
@@ -199,6 +204,10 @@ function Game() {
                                         clawPos[1] === ypos && (
                                             <Claw open={clawOpen} />
                                         )}
+                                    {calculateClawPos(clawPos, code).every(
+                                        (val, idx) => val === [xpos, ypos][idx]
+                                    ) &&
+                                        !hideGhost && <Claw open ghost />}
                                 </Item>
                             ))
                         )}

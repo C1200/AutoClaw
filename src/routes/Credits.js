@@ -53,8 +53,26 @@ function Credits() {
             </section>
 
             <section>
-                <h4>Audio</h4>
+                <h4>Music/SFX</h4>
                 <p>F.M.Audio via Freesound</p>
+            </section>
+
+            <section>
+                <p>"Overcast" Kevin MacLeod (incompetech.com)</p>
+                <p>Licensed under Creative Commons: By Attribution 3.0</p>
+                <p>http://creativecommons.org/licenses/by/3.0/</p>
+            </section>
+
+            <section>
+                <p>"Newer Wave" Kevin MacLeod (incompetech.com)</p>
+                <p>Licensed under Creative Commons: By Attribution 3.0</p>
+                <p>http://creativecommons.org/licenses/by/3.0/</p>
+            </section>
+
+            <section>
+                <p>"Voxel Revolution" Kevin MacLeod (incompetech.com)</p>
+                <p>Licensed under Creative Commons: By Attribution 3.0</p>
+                <p>http://creativecommons.org/licenses/by/3.0/</p>
             </section>
 
             <section>
