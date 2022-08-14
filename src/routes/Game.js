@@ -91,6 +91,12 @@ function Game() {
               .length
         : -1;
 
+    if (remainingItems === 0) {
+        setTimeout(() => {
+            navigate(`/win/${totalLines}`);
+        }, 2000);
+    }
+
     function removeItem([x, y]) {
         setItems((prev) => {
             if (prev === null) return null;
@@ -130,11 +136,6 @@ function Game() {
 
         setHideGhost(false);
         setCode([{ choose: true }]);
-
-        if (remainingItems === 0) {
-            await wait(2000);
-            navigate(`/win/${totalLines}`);
-        }
     };
 
     useEffect(() => {
