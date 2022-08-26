@@ -1,5 +1,6 @@
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Howl } from 'howler';
+import { ThemeProvider } from './darkMode';
 
 import Menu from './routes/Menu';
 import Game from './routes/Game';
@@ -36,15 +37,17 @@ playMusic();
 
 function App() {
     return (
-        <MemoryRouter>
-            <Routes>
-                <Route path="/" element={<Menu />} />
-                <Route path="/game" element={<Settings />} />
-                <Route path="/game/:x/:y" element={<Game />} />
-                <Route path="/credits" element={<Credits />} />
-                <Route path="/win/:lines" element={<Win />} />
-            </Routes>
-        </MemoryRouter>
+        <ThemeProvider>
+            <MemoryRouter>
+                <Routes>
+                    <Route path="/" element={<Menu />} />
+                    <Route path="/game" element={<Settings />} />
+                    <Route path="/game/:x/:y" element={<Game />} />
+                    <Route path="/credits" element={<Credits />} />
+                    <Route path="/win/:lines" element={<Win />} />
+                </Routes>
+            </MemoryRouter>
+        </ThemeProvider>
     );
 }
 

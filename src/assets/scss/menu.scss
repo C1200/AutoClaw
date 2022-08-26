@@ -24,3 +24,32 @@
         text-decoration: none;
     }
 }
+
+body {
+    & {
+        .theme-toggler {
+            & {
+                all: unset;
+                font-family: 'bootstrap-icons';
+                font-size: 2em;
+                position: absolute;
+                bottom: 5px;
+                right: 5px;
+            }
+
+            &.light::before {
+                content: '\F494';
+            }
+
+            &.dark::before {
+                content: '\F1D1';
+            }
+        }
+    }
+
+    &.dark {
+        .theme-toggler {
+            color: #ffffff;
+        }
+    }
+}

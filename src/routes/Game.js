@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Howl } from 'howler';
 import { randomInt } from '../utils/random';
+
 import Border from '../components/Border';
 import Claw from '../components/Claw';
 import Grid from '../components/Grid';
 import Item from '../components/Item';
 import Arrow from '../components/Arrow';
-import clawSfx from '../assets/audio/claw.mp3';
 
 let GRID_SIZE = [0, 0];
 
@@ -26,8 +26,10 @@ function generateItems(amount, claw) {
     return array;
 }
 
-function allowedMoves(clawPos) {
+function allowedMoves(clawPos, lastMove) {
     let moves = new Set(Arrow.directions);
+
+    if (moves.has(lastMove)) moves.delete(lastMove);
 
     if (clawPos[0] === 0) moves.delete('left');
     if (clawPos[1] === 0) moves.delete('up');
@@ -70,8 +72,25 @@ function aiMove(clawPos) {
 }
 
 const clawAudio = new Howl({
-    src: [clawSfx],
+    src: [require('../assets/audio/claw.mp3')],
 });
+
+const goAudio = new Howl({
+    src: [require('../assets/audio/toggle_001.mp3')],
+});
+
+const moveSfx = [
+    require('../assets/audio/confirmation_001.mp3'),
+    require('../assets/audio/confirmation_002.mp3'),
+    require('../assets/audio/confirmation_003.mp3'),
+    require('../assets/audio/confirmation_004.mp3'),
+];
+function playMoveAudio() {
+    const howl = new Howl({
+        src: [moveSfx[randomInt(0, moveSfx.length - 1)]],
+    });
+    howl.play();
+}
 
 function Game() {
     const navigate = useNavigate();
@@ -83,6 +102,7 @@ function Game() {
     const [code, setCode] = useState([{ choose: true }]);
     const [totalLines, setTotalLines] = useState(0);
     const [hideGhost, setHideGhost] = useState(false);
+    const [lastMove, setLastMove] = useState(null);
 
     GRID_SIZE = [parseInt(params.x), parseInt(params.y)];
 
@@ -111,6 +131,13 @@ function Game() {
                 setTimeout(resolve, delay);
             });
         }
+
+        goAudio.play();
+        setLastMove(null);
+        setCode((prev) => {
+            const copy = [...prev];
+            return copy.filter((line) => !!line.value);
+        });
 
         setHideGhost(true);
         setTotalLines((prev) => {
@@ -171,6 +198,7 @@ function Game() {
 
         if (code[code.length - 1].aiChoose) {
             choosingTimeout = setTimeout(() => {
+                playMoveAudio();
                 setCode((prev) => {
                     let copy = [...prev];
                     copy[copy.length - 1] = {
@@ -180,7 +208,7 @@ function Game() {
                     copy.push({ choose: true });
                     return copy;
                 });
-            }, 2000);
+            }, 1500);
         }
 
         return () => {
@@ -235,9 +263,12 @@ function Game() {
                                     key={key}
                                     choose
                                     allowed={allowedMoves(
-                                        calculateClawPos(clawPos, code)
+                                        calculateClawPos(clawPos, code),
+                                        lastMove
                                     )}
                                     onChoose={(direction) => {
+                                        playMoveAudio();
+                                        setLastMove(direction);
                                         setCode((prev) => {
                                             let copy = [...prev];
                                             copy[copy.length - 1] = {

@@ -5,6 +5,7 @@
 @import './credits.scss';
 @import './settings.scss';
 @import './win.scss';
+@import '../../../node_modules/bootstrap-icons/font/bootstrap-icons.scss';
 
 html,
 body {
@@ -16,6 +17,12 @@ body {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
         'Noto Sans', 'Liberation Sans', Arial, sans-serif, 'Apple Color Emoji',
         'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+html.dark,
+body.dark {
+    background: #262626;
+    color: #ffffff;
 }
 
 #root {

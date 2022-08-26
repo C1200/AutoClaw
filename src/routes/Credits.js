@@ -55,6 +55,7 @@ function Credits() {
             <section>
                 <h4>Music/SFX</h4>
                 <p>F.M.Audio via Freesound</p>
+                <p>Kenney</p>
             </section>
 
             <section>
@@ -90,6 +91,12 @@ function Credits() {
             <section>
                 <h4>Special Thanks To</h4>
                 <p>You</p>
+                <p>
+                    perfmouse-studios, asfigames, goragarxgamedev, and
+                </p>
+                <p>
+                    breakablebird for leaving comments on the Wowie Jam page
+                </p>
             </section>
 
             <section>
